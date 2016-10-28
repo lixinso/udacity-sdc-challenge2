@@ -6,6 +6,8 @@ import pygame
 import sys
 from pygame.locals import *
 from sensor_msgs.msg import CompressedImage,Image
+from std_msgs.msg import Float64
+from dbw_mkz_msgs.msg import SteeringReport
 import numpy as np
 import cStringIO
 
@@ -41,12 +43,17 @@ def compressedImageCB(ros_data):
     
     pygame.display.update()
 
+def steeringAngleData(ros_data):
+    if ros_data._connection_header['topic'] == '/vehicle/steering_report':
+        steering_angle = ros_data.steering_wheel_angle
+        print "steering_angle: ", steering_angle
 
 def listener():
     rospy.init_node('master',anonymous=True)
     rospy.Subscriber("/left_camera/image_color", Image, compressedImageCB)
     rospy.Subscriber("/center_camera/image_color",Image, compressedImageCB)
     rospy.Subscriber("/right_camera/image_color", Image, compressedImageCB)
+    rospy.Subscriber("/vehicle/steering_report", SteeringReport, steeringAngleData)
     rospy.spin()
 
 
